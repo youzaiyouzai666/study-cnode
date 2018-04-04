@@ -3,6 +3,12 @@ const path = require('path')
 const utils = require('./utils')
 const config = require('../config')
 const vueLoaderConfig = require('./vue-loader.conf')
+const ExtractTextPlugin = require("extract-text-webpack-plugin");
+
+const extractSass = new ExtractTextPlugin({
+  filename: "[name].[contenthash].css",
+  disable: process.env.NODE_ENV === "development"
+});
 
 function resolve (dir) {
   return path.join(__dirname, '..', dir)
@@ -40,6 +46,19 @@ module.exports = {
         test: /\.js$/,
         loader: 'babel-loader',
         include: [resolve('src'), resolve('test'), resolve('node_modules/webpack-dev-server/client')]
+      },
+      {
+        test: /\.scss$/,
+        use: [{
+            loader: "style-loader" // 将 JS 字符串生成为 style 节点
+        }, {
+            loader: "css-loader" // 将 CSS 转化成 CommonJS 模块
+        }, {
+            loader: "sass-loader" // 将 Sass 编译成 CSS
+        }],
+        include:[
+          
+        ]
       },
       {
         test: /\.(png|jpe?g|gif|svg)(\?.*)?$/,

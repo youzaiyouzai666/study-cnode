@@ -1,15 +1,29 @@
 import Vue from 'vue'
 import Router from 'vue-router'
-import HelloWorld from '@/components/HelloWorld'
 
 Vue.use(Router)
 
+const Home = () => import('@/views/index.vue')
+const List = () => import('@/views/list.vue')
+const Topic = () => import('@/views/topic.vue')
+
 export default new Router({
+  mode: 'history',
   routes: [
     {
       path: '/',
-      name: 'HelloWorld',
-      component: HelloWorld
+      name: 'home',
+      component: Home
+    },
+    {
+      path:'/list',
+      name:'list',
+      component: List
+    },
+    {
+      path:'/topic/:id',
+      name:'topic',
+      component: Topic
     }
   ]
 })
