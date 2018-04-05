@@ -42,17 +42,26 @@ export default {
     methods: {
         openMenu() {
             // $('html, body, #page').addClass('scroll-hide');
-            $('body').css('overflow', 'hidden');
+            // $('body').css('overflow', 'hidden');
             this.show = !this.show;
         },
         showMenus() {
             this.show = !this.show;
-            $('body').css('overflow', 'auto');
+            
             // $('html, body, #page').removeClass('scroll-hide');
         }
     },
+    watch:{
+        show: function(to, from){
+            if(!from){
+               $('body').css('overflow', 'hidden'); 
+            }else{
+                $('body').css('overflow', 'auto');
+            }
+        }
+    },
     components: {
-        'nvMenu': require('./menu.vue')
+        'nvMenu':  () => import('./menu.vue')
     }
 };
 </script>

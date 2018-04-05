@@ -25,5 +25,8 @@ export default new Router({
       name:'topic',
       component: Topic
     }
-  ]
+  ],
+  scrollBehavior (to, from, savedPosition) {
+    return { x: 0, y: 0 }
+  }
 })

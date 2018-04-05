@@ -46,6 +46,20 @@
 import utils from "@/lib/util.js";
 import nvHead from "@/components/header.vue";
 
+const ROUTE_LIST = "routeLists";
+
+function _initData() {
+  return {
+    topics: [],
+    searchKey: {
+      //路由参数
+      page: 1,
+      limit: 10,
+      tab: "all",
+      mdrender: true
+    }
+  };
+}
 export default {
   filters: {
     getLastTimeStr(time, isFromNow) {
@@ -53,30 +67,45 @@ export default {
     }
   },
   data() {
-    return {
-      topics: [],
-      searchKey: {
-        page: 1,
-        limit: 10,
-        tab: "all",
-        mdrender: true
-      }
-    };
+    return _initData();
   },
   created() {
-    // 组件创建完后获取数据，
-    // 此时 data 已经被 observed 了
-    this.getTopics();
+    this.initData();
   },
   mounted() {
+    //添加滚动事件
     window.addEventListener(
       "scroll",
       utils.throttle(this.scrollMethod, 1000, 500)
     );
   },
+  beforeRouteLeave(to, from, next) {
+    if (to.name === "topic") {
+      window.sessionStorage.setItem(
+        ROUTE_LIST,
+        JSON.stringify({
+          scrollTop: document.documentElement.scrollTop,
+          topics: this.topics,
+          searchKey: this.searchKey,
+          tab: to.query.tab || "all"
+        })
+      );
+    }
+    //取消滚动事件
+    window.removeEventListener(
+      "scroll",
+      utils.throttle(this.scrollMethod, 1000, 500)
+    );
+    next();
+  },
   watch: {
     // 如果路由有变化，会再次执行该方法
-    $route: "getTopics"
+    $route: function(to, from) {
+      this.initData(true);
+      // this.getTopics();
+      // 隐藏导航栏
+      this.$refs.head.show = false;
+    }
   },
   methods: {
     // 获取title文字
@@ -105,7 +134,6 @@ export default {
     getTopics() {
       //   let params = $.param(this.searchKey);
       this.axios.get("/topics", { params: this.searchKey }).then(d => {
-        console.log(d);
         if (d && d.data && d.data.data) {
           d.data.data.forEach(this.mergeTopics);
         }
@@ -117,6 +145,31 @@ export default {
     },
     mergeTopics(topic) {
       this.topics.push(topic);
+    },
+    /**@augments
+     * 初始化 data，并通过route得到数据
+     */
+    initData(isTypes) {
+      const routeLists = JSON.parse(window.sessionStorage.getItem(ROUTE_LIST));
+      debugger;
+      if (routeLists && !isTypes) {
+        this.topics = routeLists.topics;
+        this.searchKey = routeLists.searchKey;
+        if (this.$route.query && this.$route.query.tab) {
+          this.searchKey.tab = this.$route.query.tab;
+        }
+         this.$nextTick(() => document.documentElement.scrollTop=routeLists.scrollTop|| 0);
+      } else {
+        this.topics = _initData().topics;
+        this.searchKey = _initData().searchKey;
+        if (this.$route.query && this.$route.query.tab) {
+          this.searchKey.tab = this.$route.query.tab;
+        }
+        // 组件创建完后获取数据，
+        // 此时 data 已经被 observed 了
+        this.getTopics();
+      }
+      //this.$data 不能更改整体
     },
     scrollMethod() {
       const scrollH = document.body.scrollHeight;

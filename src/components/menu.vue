@@ -15,14 +15,12 @@
     export default {
         replace: true,
         props: ['showMenu', 'pageType', 'nickName', 'profileUrl'],
-        components: {
-        }
+        components: {}
     };
 </script>
 
 <style lang="scss">
     /*侧边栏*/
-    
     .nav-list {
         position: fixed;
         top: 0;
