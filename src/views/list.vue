@@ -3,6 +3,7 @@
         <!-- 全局header -->
         <nv-head :page-type="getTitleStr(searchKey.tab)"
                 ref="head"
+                :show = "isShow"
                 :fix-head="true"
                 :need-add="true">
         </nv-head>
@@ -51,6 +52,7 @@ const ROUTE_LIST = "routeLists";
 function _initData() {
   return {
     topics: [],
+    isShow: false,
     searchKey: {
       //路由参数
       page: 1,
@@ -104,7 +106,7 @@ export default {
       this.initData(true);
       // this.getTopics();
       // 隐藏导航栏
-      this.$refs.head.show = false;
+      this.isShow = false;
     }
   },
   methods: {

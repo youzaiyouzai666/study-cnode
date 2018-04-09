@@ -23,6 +23,7 @@ import $ from 'webpack-zepto';
 export default {
     replace: true,
     props: {
+        show: Boolean,
         pageType: String,
         fixHead: Boolean,
         messageCount: Number,
